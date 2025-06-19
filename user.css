@@ -1,0 +1,196 @@
+/* Reset and global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: linear-gradient(to right, #f4f6f9, #d1eaff);
+  color: #333;
+  min-height: 100vh;
+}
+
+/* Header + Hamburger Menu */
+.user-header {
+  background-color: #0057b8;
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.user-nav {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.user-nav a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.3s;
+}
+
+.user-nav a:hover {
+  opacity: 0.8;
+}
+
+.hamburger {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+.user-nav.show {
+  display: block;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: #0057b8;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+/* Auth Forms */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+}
+
+.auth-form {
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  animation: slideIn 0.5s ease;
+}
+
+.auth-form h2 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.auth-form input {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
+
+.auth-form button {
+  width: 100%;
+  padding: 0.75rem;
+  background: #0057b8;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  transition: background 0.3s ease;
+}
+
+.auth-form button:hover {
+  background: #003f91;
+}
+
+.auth-form p {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.auth-form a {
+  color: #0057b8;
+}
+
+/* Dashboard */
+.dashboard-main {
+  padding: 2rem;
+}
+
+.dashboard-main h2 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.dashboard-main section {
+  margin-bottom: 3rem;
+}
+
+.card-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.02);
+}
+
+.card h4 {
+  margin-bottom: 0.5rem;
+  color: #0057b8;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .user-nav {
+    display: none;
+    flex-direction: column;
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .dashboard-main {
+    padding: 1rem;
+  }
+
+  .card-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 769px) {
+  .card-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

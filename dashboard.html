@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f6f9;
+    }
+    .header {
+      background-color: #2c3e50;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 22px;
+    }
+    .hamburger {
+      font-size: 24px;
+      cursor: pointer;
+      display: none;
+    }
+    .sidebar {
+      width: 200px;
+      background: #34495e;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 20px;
+      color: #fff;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .sidebar.active {
+      transform: translateX(0);
+    }
+    .sidebar h2 {
+      font-size: 18px;
+    }
+    .sidebar a {
+      color: #ecf0f1;
+      text-decoration: none;
+      display: block;
+      margin: 40px 0;
+      transition: 0.3s;
+    }
+    .sidebar a:hover {
+      color: #1abc9c;
+    }
+    .main {
+      padding: 20px;
+      margin-left: 0;
+    }
+    section {
+      display: none;
+    }
+    section.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    form button {
+      background: #27ae60;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    form button:hover {
+      background: #2ecc71;
+    }
+    .logout {
+      color: white;
+      text-decoration: none;
+      background: #c0392b;
+      padding: 8px 16px;
+      border-radius: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    @media (min-width: 769px) {
+      .sidebar { transform: translateX(0); }
+      .main { margin-left: 270px; }
+    }
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <i class="fas fa-bars hamburger" onclick="toggleMenu()"></i>
+    <h1 id="userNameHeader">User Dashboard</h1>
+    <button id="logout">Logout</button>
+  </div>
+  <div class="sidebar" id="sidebar">
+    <h2>User Panel</h2>
+    <a href="#" onclick="showSection('surgery')">My Surgery Details</a>
+    <a href="#" onclick="showSection('history')">Medical History</a>
+    <a href="#" onclick="showSection('request')">Request Surgery</a>
+    <a href="#" onclick="showSection('doctors')">Doctors</a>
+  </div>
+  <div class="main">
+    <section id="surgery">
+      <h2>My Surgery Details</h2>
+      <div id="surgeryDetails">Loading surgery details...</div>
+    </section>
+    <section id="history">
+      <h2>Medical History</h2>
+      <div id="medicalHistory">Loading history...</div>
+    </section>
+    <section id="request">
+      <h2>Request Surgery</h2>
+      <form id="requestForm">
+        <label>Procedure Name:</label><br />
+        <input type="text" id="procedure" required /><br />
+        <label>Preferred Date:</label><br />
+        <input type="date" id="date" required /><br />
+        <label>Additional Notes:</label><br />
+        <textarea id="notes"></textarea><br />
+        <button type="submit">Submit Request</button>
+      </form>
+      <div id="requestList"></div>
+    </section>
+    <section id="doctors">
+      <h2>Doctors</h2>
+      <div id="doctorList">Loading doctors...</div>
+    </section>
+  </div>
+  <script>
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const sidebar = document.getElementById("sidebar");
+
+    function toggleMenu() {
+      sidebar.classList.toggle("active");
+    }
+    function showSection(id) {
+      document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (!user) return window.location.href = "login.html";
+      db.collection("users").doc(user.uid).get().then(doc => {
+        const userData = doc.exists ? doc.data() : {};
+        document.getElementById("userNameHeader").textContent = `Welcome, ${userData.name || user.email}`;
+      });
+
+      db.collection("schedules").where("userId", "==", user.uid).get().then(snapshot => {
+        const rows = snapshot.docs.map(doc => {
+          const d = doc.data();
+          return `<tr><td>${new Date(d.date).toLocaleString()}</td><td>${d.otId}</td><td>${d.anesthesia}</td></tr>`;
+        }).join("");
+        document.getElementById("surgeryDetails").innerHTML = rows ? `<table><tr><th>Date</th><th>OT ID</th><th>Anesthesia</th></tr>${rows}</table>` : "No surgery data.";
+      });
+
+      db.collection("medicalHistory").where("userId", "==", user.uid).get().then(snapshot => {
+        const rows = snapshot.docs.map(doc => `<tr><td>${doc.data().detail}</td></tr>`).join("");
+        document.getElementById("medicalHistory").innerHTML = rows ? `<table><tr><th>Details</th></tr>${rows}</table>` : "No history records.";
+      });
+
+      document.getElementById("requestForm").addEventListener("submit", e => {
+        e.preventDefault();
+        const data = {
+          userId: user.uid,
+          procedure: document.getElementById("procedure").value,
+          date: document.getElementById("date").value,
+          notes: document.getElementById("notes").value
+        };
+        db.collection("requests").add(data).then(() => alert("Request submitted."));
+      });
+
+      db.collection("requests").where("userId", "==", user.uid).get().then(snapshot => {
+        const rows = snapshot.docs.map(doc => {
+          const d = doc.data();
+          return `<tr><td>${d.procedure}</td><td>${d.date}</td><td>${d.notes}</td></tr>`;
+        }).join("");
+        document.getElementById("requestList").innerHTML = rows ? `<table><tr><th>Procedure</th><th>Date</th><th>Notes</th></tr>${rows}</table>` : "No requests found.";
+      });
+
+      db.collection("doctors").get().then(snapshot => {
+        const rows = snapshot.docs.map(doc => {
+          const d = doc.data();
+          return `<tr><td>${d.name}</td><td>${d.specialty}</td></tr>`;
+        }).join("");
+        document.getElementById("doctorList").innerHTML = rows ? `<table><tr><th>Name</th><th>Specialty</th></tr>${rows}</table>` : "No doctors available.";
+      });
+    });
+
+    document.getElementById("logout").addEventListener("click", function () {
+      firebase.auth().signOut()
+        .then(() => {
+          alert("Logged out successfully.");
+          window.location.href = "../index.html";
+        })
+        .catch((error) => {
+          console.error("Logout Error:", error.message);
+          alert("Logout failed: " + error.message);
+        });
+    });
+  </script>
+</body>
+</html>

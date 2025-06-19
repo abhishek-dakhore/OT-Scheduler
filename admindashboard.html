@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+  <style>
+    :root {
+      --primary-color: #004080;
+      --secondary-color: #f5f7fa;
+      --text-color: #2f3542;
+      --nav-bg: #ffffff;
+      --hover-bg: #e0ecff;
+      --logout-color: #e84118;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--secondary-color);
+    }
+
+    header.admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 15px 25px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      position: relative;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    nav.admin-nav {
+      display: flex;
+      gap: 20px;
+    }
+
+    nav.admin-nav a {
+      text-decoration: none;
+      color: white;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    nav.admin-nav a:hover {
+      background-color: var(--hover-bg);
+      color: var(--primary-color);
+    }
+
+    #logoutBtn {
+      background-color: var(--logout-color);
+      padding: 8px 14px;
+      border-radius: 5px;
+      color: white;
+    }
+
+    .hamburger {
+      font-size: 24px;
+      display: none;
+      cursor: pointer;
+    }
+
+    .dashboard-main {
+      padding: 30px 20px;
+    }
+
+    section {
+      display: none;
+      background: white;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    section.active {
+      display: block;
+    }
+
+    .form-group {
+      margin: 10px 0;
+    }
+
+    input[type="text"], input[type="email"], input[type="datetime-local"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #0059b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger {
+        display: block;
+      }
+
+      nav.admin-nav {
+        flex-direction: column;
+        position: absolute;
+        top: 65px;
+        right: 0;
+        background-color: var(--primary-color);
+        width: 100%;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 1000;
+      }
+
+      nav.admin-nav.show {
+        display: flex;
+      }
+
+      nav.admin-nav a {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <div class="logo">🏥 Admin Panel</div>
+    <nav class="admin-nav" id="adminNav">
+      <a onclick="showSection('doctors')">Doctors</a>
+      <a onclick="showSection('patients')">Patients</a>
+      <a onclick="showSection('schedule')">Schedule OT</a>
+      <a onclick="showSection('analytics')">Analytics</a>
+      <button id="logoutBtn">Logout</button>
+    </nav>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+  </header>
+
+  <main class="dashboard-main">
+    <section id="doctors" class="active">
+      <h2>Manage Doctors</h2>
+      <form id="addDoctorForm">
+        <div class="form-group">
+          <input type="text" id="doctorName" placeholder="Doctor Name" required>
+        </div>
+        <div class="form-group">
+          <input type="text" id="doctorSpecialty" placeholder="Specialty" required>
+        </div>
+        <button type="submit">Add Doctor</button>
+      </form>
+      <table id="doctorTable">
+        <thead>
+          <tr><th>Name</th><th>Specialty</th><th>Action</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="patients">
+      <h2>Patients</h2>
+      <div id="patientList">Loading patients...</div>
+    </section>
+
+    <section id="schedule">
+      <h2>Schedule OT</h2>
+      <form id="addScheduleForm">
+        <div class="form-group">
+          <input type="datetime-local" id="surgeryDate" required />
+        </div>
+        <div class="form-group">
+          <input type="text" id="otId" placeholder="OT ID" required />
+        </div>
+        <div class="form-group">
+          <input type="text" id="anesthesia" placeholder="Anesthesia Type & Anesthesiologist" required />
+        </div>
+        <div class="form-group">
+          <input type="text" id="medic" placeholder="Medic / Assistant Surgeon" />
+        </div>
+        <div class="form-group">
+          <input type="text" id="nurses" placeholder="Nurses Involved" />
+        </div>
+        <div class="form-group">
+          <input type="text" id="prePostEvents" placeholder="Pre/Post-Op Events" />
+        </div>
+        <div class="form-group">
+          <input type="text" id="remarks" placeholder="Doctor's Remarks" />
+        </div>
+        <div class="form-group">
+          <input type="text" id="materials" placeholder="Required Drugs/Instruments" />
+        </div>
+        <button type="submit">Add Schedule</button>
+      </form>
+      <table id="scheduleTable">
+        <thead>
+          <tr><th>Date</th><th>OT ID</th><th>Anesthesia</th><th>Medic</th><th>Nurses</th><th>Pre/Post</th><th>Remarks</th><th>Materials</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="analytics">
+      <h2>Analytics</h2>
+      <p>Total number of doctors and patients, OT usage patterns, and critical event flags.</p>
+      <div id="analyticsData">Loading analytics...</div>
+    </section>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="../assets/js/firebase-config.js"></script>
+  <script>
+    document.getElementById('hamburger').onclick = () => {
+      document.getElementById('adminNav').classList.toggle('show');
+    };
+
+    document.getElementById("logoutBtn").addEventListener("click", function () {
+      firebase.auth().signOut().then(() => {
+        alert("Logged out successfully.");
+        window.location.href = "../index.html";
+      }).catch((error) => {
+        alert("Logout failed: " + error.message);
+      });
+    });
+
+    function showSection(id) {
+      document.querySelectorAll('main section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    const db = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (!user) return location.href = 'adminLogin.html';
+
+      db.collection("doctors").onSnapshot(snapshot => {
+        const tbody = document.querySelector("#doctorTable tbody");
+        tbody.innerHTML = snapshot.docs.map(doc => `
+          <tr>
+            <td>${doc.data().name}</td>
+            <td>${doc.data().specialty}</td>
+            <td><button onclick="deleteDoctor('${doc.id}')">Remove</button></td>
+          </tr>`).join('') || '<tr><td colspan="3">No doctors found.</td></tr>';
+      });
+
+      db.collection("patients").get().then(snapshot => {
+        document.getElementById("patientList").innerHTML = snapshot.docs.map(doc => `<div class="item-card">${doc.data().name} - ${doc.data().age} yrs</div>`).join('') || "No patients found.";
+      });
+
+      db.collection("schedules").onSnapshot(snapshot => {
+        const tbody = document.querySelector("#scheduleTable tbody");
+        tbody.innerHTML = snapshot.docs.map(doc => {
+          const d = doc.data();
+          return `<tr>
+            <td>${new Date(d.date).toLocaleString()}</td>
+            <td>${d.otId}</td>
+            <td>${d.anesthesia}</td>
+            <td>${d.medic}</td>
+            <td>${d.nurses}</td>
+            <td>${d.prePostEvents}</td>
+            <td>${d.remarks}</td>
+            <td>${d.materials}</td>
+          </tr>`;
+        }).join('') || '<tr><td colspan="8">No schedules found.</td></tr>';
+      });
+
+      db.collection("analytics").get().then(snapshot => {
+        const html = snapshot.docs.map(doc => `<div class="item-card">${doc.data().metric}: ${doc.data().value}</div>`).join('');
+        document.getElementById("analyticsData").innerHTML = html || "No analytics data found.";
+      });
+    });
+
+    document.getElementById("addDoctorForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const name = document.getElementById("doctorName").value;
+      const specialty = document.getElementById("doctorSpecialty").value;
+      db.collection("doctors").add({ name, specialty }).then(() => {
+        document.getElementById("addDoctorForm").reset();
+      });
+    });
+
+    document.getElementById("addScheduleForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const schedule = {
+        date: document.getElementById("surgeryDate").value,
+        otId: document.getElementById("otId").value,
+        anesthesia: document.getElementById("anesthesia").value,
+        medic: document.getElementById("medic").value,
+        nurses: document.getElementById("nurses").value,
+        prePostEvents: document.getElementById("prePostEvents").value,
+        remarks: document.getElementById("remarks").value,
+        materials: document.getElementById("materials").value,
+      };
+      db.collection("schedules").add(schedule).then(() => {
+        document.getElementById("addScheduleForm").reset();
+      });
+    });
+
+    function deleteDoctor(id) {
+      db.collection("doctors").doc(id).delete();
+    }
+  </script>
+</body>
+</html>

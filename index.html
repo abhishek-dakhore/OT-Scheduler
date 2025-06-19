@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hospital OT Scheduler</title>
+  <link rel="stylesheet" href="./assets/css/style.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">OT Scheduler</div>
+    <nav class="nav-links" id="navLinks">
+      <a href="./admin/adminLogin.html">Admin</a>
+      <a href="./user/login.html">User Login</a>
+      <a href="./user/register.html">Register</a>
+      <a href="about.html">About</a>
+    </nav>
+    <div class="hamburger" id="hamburger">&#9776;</div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Smart Surgical Room Scheduler</h1>
+      <p>Streamline your hospital OT operations with real-time planning and tracking.</p>
+      <a href="./user/register.html" class="cta">Get Started</a>
+    </div>
+  </section>
+  <section class="slider">
+  <div class="slides">
+    <img src="assets/img/slide1.jpg" alt="Slide 1">
+    <img src="assets/img/slide2.jpg" alt="Slide 2">
+    <img src="assets/img/slide3.jpg" alt="Slide 3">
+    <img src="assets/img/slide4.jpg" alt="Slide 4">
+    <img src="assets/img/slide5.jpg" alt="Slide 5">
+  </div>
+</section>
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-col">
+      <h4>Hospital OT Scheduler</h4>
+      <p>Efficiently managing your surgical operations with accuracy and ease.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="user/register.html">Register</a></li>
+        <li><a href="user/login.html">User Login</a></li>
+        <li><a href="admin/login.html">Admin Login</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <p>Email: support@hospitalot.com</p>
+      <p>Phone: +91-9876543210</p>
+      <p>Location: Pune, India</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 Hospital OT Scheduler. All rights reserved.</p>
+  </div>
+</footer>
+
+
+  <!-- Firebase SDKs (add your config in firebase-config.js) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="./assets/js/firebase-config.js"></script>
+  <script>
+    // Mobile menu toggle
+    $('#hamburger').on('click', function () {
+      $('#navLinks').toggleClass('show');
+    });
+  </script>
+</body>
+</html>
